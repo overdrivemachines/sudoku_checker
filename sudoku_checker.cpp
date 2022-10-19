@@ -16,14 +16,25 @@ int sudoku[9][9] = {
   { 0, 0, 0, 0, 8, 0, 1, 7, 9 }
 };
 
-bool is_row_valid(int row) {
-  int element = 0;
+bool is_row_column_valid(int index) {
+  int row_element = 0;
+  int column_element = 0;
   for (int i = 0; i < 9; i++) {
-    element = sudoku[row][i];
-    // Check if element is present in the row. Do not check 0s.
-    if (element != 0) {
+    row_element = sudoku[index][i];
+    column_element = sudoku[i][index];
+
+    // Check if row_element is present in the row. Do not check 0s.
+    if (row_element != 0) {
       for (int j = i + 1; j < 9; j++) {
-        if (element == sudoku[row][j])
+        if (row_element == sudoku[index][j])
+          return false;
+      }
+    }
+
+    // Check if column_element is present in the column. Do not check 0s.
+    if (column_element != 0) {
+      for (int j = i + 1; j < 9; j++) {
+        if (column_element == sudoku[j][index])
           return false;
       }
     }
@@ -31,28 +42,50 @@ bool is_row_valid(int row) {
   return true;
 }
 
-bool is_column_valid(int column) {
+bool is_sub_array_valid(int index) {
+  // 0 1 2 3 4 5 6 7 8 9
+  //
+
+  int element_row = 3 * (index / 3);
+  int element_column = (index - element_row) * 3;
   int element = 0;
-  for (int i = 0; i < 9; i++) {
-    element = sudoku[i][column];
-    // Check if element is present in the row. Do not check 0s.
-    if (element != 0) {
-      for (int j = i + 1; j < 9; j++) {
-        if (element == sudoku[j][column])
+  // cout << "index: " << index << " start: [" << element_row << ", " << element_column << "]\n";
+  // cout << "***Subarray: ";
+
+  for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 3; j++) {
+      // cout << "[" << i + element_row << ", " << j + element_column << "] ";
+      element = sudoku[i + element_row][j + element_column];
+      // cout << element << ",";
+      if (element!= 0) {
+        int count = 0;
+        for (int k = 0; k < 3; k++) {
+          for (int l = 0; l < 3; l++) {
+            if (element == sudoku[k + element_row][l + element_column]) {
+              count++;
+            }
+          }
+        }
+        if (count > 1)
           return false;
       }
     }
   }
+  // cout << "\n";
+
+  // int element_column = 0;
+
+  // int start_element = sudoku[][];
   return true;
 }
 
 int main(int argc, char const *argv[]) {
   for (int i = 0; i < 9; i++) {
-    if (is_row_valid(i) == false)
-      cout << "Row: " << i << " is not valid\n";
+    if (is_row_column_valid(i) == false)
+      cout << "Row or Column: " << i << " is not valid\n";
 
-    if (is_column_valid(i) == false)
-      cout << "Column: " << i << " is not valid\n";
+    if (is_sub_array_valid(i) == false)
+      cout << "Subarray " << i << " is not valid\n";
   }
 
   return 0;
